@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
@@ -7,10 +8,16 @@ const server = http.createServer(app);
 
 app.use(router);
 
-const io = require("socket.io")(server,{ cors: { origin: '*' } });
 
 let users = [];
 
+
+
+const io = require("socket.io")(process.env.PORT || 8900, {
+  cors: {
+    origin: process.env.CLIENT_URL, // Prevents unauthorized access
+  },
+});
 const addUser = (userId, socketId) => {
   !users.some((user) => user.userId === userId) &&
     users.push({ userId, socketId });

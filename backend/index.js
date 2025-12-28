@@ -1,3 +1,4 @@
+require('dotenv').config();
 import express from 'express';
 import mongoose  from 'mongoose';
 import dotenv from 'dotenv';
@@ -24,9 +25,17 @@ const URL=process.env.URL;
  
 connection(URL);
 
- 
-// const seturl="http://localhost:3000";
-// const seturl2="https://handnote.netlify.app/"
+ // MUST be at the very top
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("DB Connection Successfull!"))
+  .catch((err) => console.log(err));
+
+app.listen(process.env.PORT || 8000, () => {
+  console.log("Backend server is running!");
+});
+
  
 app.use(cors({
   origin:"*",
