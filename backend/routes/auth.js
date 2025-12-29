@@ -20,7 +20,6 @@ router.post('/register', async (req,res)=>{
         lastname: req.body.lastname,
         password:hashedPassword,
         institution:req.body.institution,
-        desc:req.body.desc,
         profilePicture:req.body.profilePicture,
         
     }) 
