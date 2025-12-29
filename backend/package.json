@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
-  "author": "ankit kumar",
+  "author": "p yathin",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.24.0",

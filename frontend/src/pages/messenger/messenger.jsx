@@ -19,10 +19,12 @@ export default function Messenger() {
   const { currentUser:user } = useSelector((state)=>state.user)
   const scrollRef = useRef();
 
+  // ✅ CRITICAL FIX: Use the Environment Variable
+  // If we are on Vercel, use the variable. If on laptop, use localhost.
   useEffect(() => {
-    // https://notesharing-socket.onrender.com/
-    const EndPoint="https://notesharing-socket.onrender.com/";
+    const EndPoint = process.env.REACT_APP_SOCKET_URL || "ws://localhost:8900";
     socket.current = io(EndPoint);
+    
     socket.current.on("getMessage", (data) => {
       setArrivalMessage({
         sender: data.senderId,
@@ -39,12 +41,15 @@ export default function Messenger() {
   }, [arrivalMessage, currentChat]);
 
   useEffect(() => {
-    socket.current.emit("addUser", user._id);
-    socket.current.on("getUsers", (users) => {
-      setOnlineUsers(
-        user.followings.filter((f) => users.some((u) => u.userId === f))
-      );
-    });
+    // Check if socket is connected before emitting
+    if(socket.current) {
+        socket.current.emit("addUser", user._id);
+        socket.current.on("getUsers", (users) => {
+        setOnlineUsers(
+            user.followings.filter((f) => users.some((u) => u.userId === f))
+        );
+        });
+    }
   }, [user]);
 
   useEffect(() => {
@@ -58,12 +63,14 @@ export default function Messenger() {
     };
     getConversations();
   }, [user._id]);
-   console.log(conversations)
+
   useEffect(() => {
     const getMessages = async () => {
       try {
-        const res = await publicRequest.get("/messages/" + currentChat?._id);
-        setMessages(res.data);
+        if(currentChat) {
+            const res = await publicRequest.get("/messages/" + currentChat._id);
+            setMessages(res.data);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -110,7 +117,7 @@ export default function Messenger() {
           <div className="chatMenuWrapper">
             <input placeholder="Search for users" className="chatMenuInput"/>
             {conversations.map((c) => (
-              <div onClick={() => setCurrentChat(c)}>
+              <div onClick={() => setCurrentChat(c)} key={c._id}>
                 <Conversation conversation={c} currentUser={user} />
               </div>
             ))}
@@ -122,7 +129,7 @@ export default function Messenger() {
               <>
                 <div className="chatBoxTop">
                   {messages.map((m) => (
-                    <div ref={scrollRef}>
+                    <div ref={scrollRef} key={m._id || Math.random()}>
                       <Message message={m} own={m.sender === user._id} />
                     </div>
                   ))}
