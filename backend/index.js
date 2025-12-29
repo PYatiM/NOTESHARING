@@ -1,4 +1,5 @@
 require('dotenv').config();
+const mongoose = require("mongoose");
 import express from 'express';
 import mongoose  from 'mongoose';
 import dotenv from 'dotenv';
@@ -26,7 +27,7 @@ const URL=process.env.URL;
 connection(URL);
 
  // MUST be at the very top
-const mongoose = require("mongoose");
+
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("DB Connection Successfull!"))
